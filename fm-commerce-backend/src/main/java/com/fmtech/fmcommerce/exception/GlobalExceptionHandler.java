@@ -10,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -47,7 +49,7 @@ public class GlobalExceptionHandler {
 
         ApiError error = new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
-                "Validation Failed",
+                "Bad Request",
                 String.join("; ", messages),
                 LocalDateTime.now()
         );
@@ -78,10 +80,27 @@ public class GlobalExceptionHandler {
     // Structure commune des réponses d'erreur
     // ==========================================
 
+
+    // 4. Structure commune des erreurs
+    @Schema(
+        name = "ApiError",
+        description = "Standard error response returned by the FM-Commerce API"
+    )
     public record ApiError(
-            int status,
-            String error,
-            String message,
-            LocalDateTime timestamp
+        @Schema(description = "HTTP status code", example = "404")
+        int status,
+
+        @Schema(description = "HTTP error description", example = "Not Found")
+        String error,
+
+        @Schema(description = "Detailed error message",
+                example = "Product not found with id: 999")
+        String message,
+
+        @Schema(description = "Date and time when the error occurred",
+                example = "2026-11-18T13:30:00",
+                type = "string",
+                format = "date-time")
+        LocalDateTime timestamp
     ) {}
 }
